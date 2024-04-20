@@ -1,0 +1,13 @@
+- name: Install pip and docker module
+  hosts: all
+  become: yes
+  roles:
+    - geerlingguy.pip
+  tasks:
+    - name: Update repositories cache and install "foo" package
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Install pip
+      pip:
+        name: docker
+        state: present

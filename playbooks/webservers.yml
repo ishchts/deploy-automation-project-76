@@ -1,0 +1,36 @@
+- name: Confiure Nginx webserver with Nginx
+  hosts: vds
+  become: true
+  vars:
+    tls_dir: /etc/nginx/ssl/
+    key_file: /files/nginx.key
+    cert_file: /files/nginx.crt
+    conf_file: /etc/nginx/sites-available/default
+    server_name: localhost
+  tasks:
+    - name: Ensure nginx installed
+      package:
+        name=nginx
+        update_cache=yes
+
+    - name: Copy nginx config file
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/sites-available/default
+
+    - name: Enable configuration
+      file:
+        dest: /etc/nginx/sites-enabled/default
+        src: /etc/nginx/sites-available/default
+        state: link
+
+    - name: Copy index.html
+      template:
+        src: index.html
+        dest: /usr/share/nginx/html/index.html
+
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+
