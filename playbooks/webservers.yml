@@ -1,5 +1,5 @@
 - name: Confiure Nginx webserver with Nginx
-  hosts: vds
+  hosts: vds2
   become: true
   vars:
     tls_dir: /etc/nginx/ssl/

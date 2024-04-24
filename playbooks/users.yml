@@ -1,0 +1,101 @@
+- name: Create Users
+  hosts: all
+  become: true
+  gather_facts: no
+  vars:
+    users:
+      - name: arya
+        email: arya@test.ru
+        group: stark
+      - name: tirion
+        email: tirion@test.ru
+        group: lannister
+      - name: jon
+        email: jon@test.ru
+        group: targaryen
+      - name: sansa
+        email: sansa@test.ru
+        group: lannister
+
+    groupslist:
+      - lannister
+      - stark
+      - targaryen
+  tasks:
+  #   - name: Ping
+  #     ping:
+  #     tags: ping
+
+    # - name: update cache
+    #   apt:
+    #     update_cache: true
+
+    # - name: copy file
+    #   copy:
+    #     src: ./test.txt
+    #     dest: /home/ishchts
+    #   tags: file
+
+    # - name: install nginx
+    #   apt:
+    #     name: nginx
+    #     update_cache: true
+    #   tags: nginx
+
+    - name: create group
+      group:
+        name: "{{ item }}"  # required. Name of the group to manage.
+        state: present # not required. choices: absent;present. Whether the group should be present or not on the remote host.
+      loop: "{{ groupslist }}"
+      tags: addgroups
+
+    - name: create users
+      user:
+        name:  "{{ item.name }}"
+        password: "Qwerty11" # not required. Optionally set the user's password to this crypted value. On macOS systems, this value has to be cleartext. Beware of security issues. To create a disabled account on Linux systems, set this to C('!') or C('*'). To create a disabled account on OpenBSD, set this to C('*************'). See U(https://docs.ansible.com/ansible/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module) for details on various ways to generate these password values.
+        create_home: True # not required. Unless set to C(no), a home directory will be made for the user when the account is created or if the home directory does not exist. Changed from C(createhome) to C(create_home) in Ansible 2.5.
+        state: present
+        group: "{{ item.group }}"
+      tags: addusers
+      loop: "{{ users }}"
+      when: ansible_host == "yserver1"
+
+    - name: Create ssh dir
+      file:
+        path: "/home/{{ item.name }}/.ssh"
+        state: directory
+        mode: '0700'
+      loop: "{{ users }}"
+      tags: addusers
+
+    - name: Add publikey
+      authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ lookup('file', '/Users/ishchts/.ssh/id_ed25519.pub') }}"
+      loop: "{{ users }}"
+      tags: addusers
+
+    - name: add git config
+      template:
+        src: "../files/.gitconfig"
+        dest: "/home/{{ item.name }}/.gitconfig"
+      loop: "{{ users }}"
+
+    - name: test register
+      shell: ls
+      register: ls_result
+      tags: debug
+
+    - name: test value
+      debug:
+        msg: "value {{ ansible_host }} ls_result {{ ls_result }}"
+      tags: debug
+    # - name: remove users
+    #   user:
+    #     name: "{{ item }}"
+    #     state: absent
+    #     remove: true
+    #   loop: "{{ users }}"
+    #   tags: removeusers
+
+  
