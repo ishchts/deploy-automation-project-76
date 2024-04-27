@@ -1,13 +1,31 @@
 - name: Install pip and docker module
   hosts: all
   become: yes
+  pre_tasks:
+    - name: update cache
+      apt:
+        update_cache: true
   roles:
-    - geerlingguy.pip
+    - role: geerlingguy.pip
   tasks:
-    - name: Update repositories cache and install "foo" package
-      ansible.builtin.apt:
-        update_cache: yes
-    - name: Install pip
-      pip:
-        name: docker
-        state: present
+    - name: Create env for redmine
+      template:
+        src: ./playbooks/templates/env.j2
+        dest: '.env'
+
+    - name: Start container
+      community.docker.docker_container:
+        name: task-manager-redmine
+        image: redmine:5.1.2-alpine3.18
+        auto_remove: true
+        cleanup: true
+        detach: true
+        output_logs: true
+        ports:
+          - 80:3000
+          - 443:3000
+        restart: true
+        restart_policy: "always"
+        evn_file: '.env'
+
+
