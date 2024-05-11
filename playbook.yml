@@ -7,6 +7,9 @@
         update_cache: true
   roles:
     - role: geerlingguy.pip
+  vars:
+    datadog_api_key: "e38a8325f7909aac1d5e213a951483a9"
+    datadog_domain: "us5.datadoghq.com"
   tasks:
     - name: Create env for redmine
       template:
@@ -27,3 +30,21 @@
         restart: true
         restart_policy: "always"
         env_file: '.env'
+
+    # Datadog Agent installation
+    - name: Import the Datadog Agent role from the Datadog collection
+      import_role:
+        name: datadog.dd.agent
+      tags: datadog
+      vars:
+        datadog_site: "{{ datadog_domain }}"
+        datadog_api_key: "{{ datadog_key }}"
+        datadog_checks:
+          http_check:
+            init_config:
+            instances:
+              - name: Redmine
+                url: http://localhost
+                method: GET
+                timeout: 10
+                http_response_status_code: 200

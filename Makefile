@@ -9,3 +9,6 @@ yc-instance-list:
 
 deploy:
 	ansible-playbook --ask-vault-pass playbook.yml
+
+datadog:
+	ansible-playbook --ask-vault-pass playbook.yml --tags=datadog
