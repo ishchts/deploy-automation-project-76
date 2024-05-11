@@ -8,15 +8,15 @@
   roles:
     - role: geerlingguy.pip
   vars:
-    datadog_api_key: "e38a8325f7909aac1d5e213a951483a9"
     datadog_domain: "us5.datadoghq.com"
+
+- hosts: webservers
   tasks:
     - name: Create env for redmine
       template:
         src: ./playbooks/templates/env.j2
         dest: '.env'
-      tags: env
-
+      tags: [env, deploy]
     - name: Start container
       community.docker.docker_container:
         name: task-manager-redmine
@@ -30,6 +30,7 @@
         restart: true
         restart_policy: "always"
         env_file: '.env'
+      tags: deploy
 
     # Datadog Agent installation
     - name: Import the Datadog Agent role from the Datadog collection

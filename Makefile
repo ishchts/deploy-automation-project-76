@@ -8,7 +8,7 @@ yc-instance-list:
 	yc compute instance list
 
 deploy:
-	ansible-playbook --ask-vault-pass playbook.yml
+	ansible-playbook --ask-vault-pass playbook.yml --tags=deploy
 
 datadog:
 	ansible-playbook --ask-vault-pass playbook.yml --tags=datadog
