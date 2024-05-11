@@ -6,3 +6,11 @@
 ```make
 make install
 ```
+
+### Деплой приложения
+
+```make
+make deploy
+```
+
+### [Приложение](https://www.iliya-shchutskiy.ru/)

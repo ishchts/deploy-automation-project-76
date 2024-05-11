@@ -8,4 +8,4 @@ yc-instance-list:
 	yc compute instance list
 
 deploy:
-	ansible-playbook playbook.yml
+	ansible-playbook --ask-vault-pass playbook.yml

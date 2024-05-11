@@ -1,1 +1,6 @@
 ansible_user: ishchts
+db_host: "{{ vault_db_host }}"
+db_port: "{{ vault_db_port }}"
+db_user: "{{ vault_db_user }}"
+db_name: "{{ vault_db_name }}"
+db_password: "{{ vault_db_password }}"

@@ -12,12 +12,12 @@
       template:
         src: ./playbooks/templates/env.j2
         dest: '.env'
+      tags: env
 
     - name: Start container
       community.docker.docker_container:
         name: task-manager-redmine
         image: redmine:5.1.2-alpine3.18
-        auto_remove: true
         cleanup: true
         detach: true
         output_logs: true
@@ -26,6 +26,4 @@
           - 443:3000
         restart: true
         restart_policy: "always"
-        evn_file: '.env'
-
-
+        env_file: '.env'
